@@ -1,0 +1,314 @@
+/* ———Boid Canvas——— */
+#boid-canvas {
+  position: fixed;       /* stays in place while you scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;  /* clicks pass through to content below */
+  z-index: 0;            /* behind everything */
+}
+
+/* ———Reset & Base——— */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ———Variables——— */
+:root {
+  --bg:         #f2f3f4;
+  --surface:    #ffffff;
+  --border:     #d4d6d9;
+  --text:       #1a1c1e;
+  --text-muted: #6b7280;
+  --accent:     #2a5ca8;    /* scientific blue */
+  --accent-light: #e8eef8;
+  --rule-tag:   #e2e8f0;
+  --font-mono:  "Courier New", Courier, monospace;
+  --font-body:  Georgia, "Times New Roman", serif;
+}
+
+/* ———Body——— */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  padding: 0 1rem;
+}
+
+/* ———Lift content above canvas——— */
+.site-header, .content, .site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ———Header——— */
+.site-header {
+  max-width: 720px;
+  margin: 4rem auto 1rem;
+  padding-bottom: 2rem;
+}
+
+.header-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.site-title {
+  font-size: 2.6rem;
+  font-weight: normal;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.site-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.header-rule {
+  height: 1px;
+  background-color: var(--border);
+}
+
+/* ———Main Content——— */
+.content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+/* ———Sections——— */
+.section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-number {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: normal;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.section p {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+/* ———Rules Grid——— */
+.rules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .rules-grid {
+    grid-template-columns: repeat(3, 1fr);
+    /* text row auto height, diagram row fixed height */
+    grid-template-rows: auto auto;
+  }
+}
+
+.rule-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+
+.rule-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.rule-name {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+}
+
+.rule-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+}
+
+/* ———Rule Diagram Boxes (row 2 of the grid)——— */
+.rule-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-diagram-inner {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #e8eaed;
+}
+
+.rule-diagram-caption {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 0.4rem 0.6rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ———Callout Box——— */
+.callout {
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.callout-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.callout p {
+  font-size: 0.95rem;
+  margin-bottom: 0;
+  color: var(--text);
+}
+
+/* ———Uses List——— */
+.uses-list {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.uses-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.uses-list li:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.use-domain {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+/* ———Sources List——— */
+.sources-list {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.sources-list li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.sources-list a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.sources-list a:hover {
+  text-decoration: underline;
+}
+
+.source-note {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ———Media Box Template——— */
+.media-box {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin: 2rem 0;
+}
+
+.media-box-inner {
+  /* Placeholder area — replace with an image, canvas, iframe, etc. */
+  width: 100%;
+  aspect-ratio: 16 / 7;         /* change ratio to suit your content */
+  background-color: #e8eaed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-box-placeholder {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  user-select: none;             /* prevent accidental text selection */
+}
+
+.media-box-caption {
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ———Footer——— */
+.site-footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
