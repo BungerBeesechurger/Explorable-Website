@@ -383,7 +383,7 @@ let cfg = {
   visionDist: 95,
   boidSize:   12,
   speed:      4.0,
-  count:      40,
+  count:      12,
   turnDamp:   0.0,
   wander:     0.04,
 };
