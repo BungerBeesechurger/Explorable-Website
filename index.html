@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boid Simulation: Flocking Behavior</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Boid Canvas (drawn behind all content) -->
+  <canvas id="boid-canvas"></canvas>
+
+  <!-- Dark Mode Toggle -->
+  <button id="theme-toggle" title="Toggle dark mode"></button>
+
+  <!-- Focus Mode Toggle -->
+  <button id="focus-toggle" title="Focus mode: hide article, pin controls">&#x26F6;</button>
+
+  <!-- Follow Mode Toggle -->
+  <button id="follow-toggle" title="Follow a boid">&#128065;</button>
+  
+  <header class="site-header">
+    <div class="header-label">Essay by Andrew Kawas</div>
+    <h1 class="site-title">How Do You Simulate a Flock of Birds?</h1>
+    <p class="site-subtitle">
+      A look into emergent group behavior and the Boid simulation model.
+    </p>
+    <div class="header-rule"></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="content">
+
+    <!-- Section: Introduction -->
+    <section class="section" id="intro">
+      <h2 class="section-title">Introduction</h2>
+      <p>
+        If you sit down and watch a flock of birds soar through the sky, you might notice
+        that there are no collisions, no singular individual leading the pack, but somehow
+        they can navigate their environment as a group. So how do they manage to maintain
+        a level of structure and direction in relation to one another? They follow some simple rules.
+      </p>
+    </section>
+
+    <!-- Section: What is a Boid -->
+    <section class="section" id="boid-simulation">
+      <h2 class="section-title">Boid Simulation</h2>
+      <p>
+        In 1986, computer graphics expert Craig Reynolds created simulated birds called
+        <strong>Boids</strong>, meaning "bird-oid" or bird-like objects. Each individual boid in the
+        simulation represents a single bird. His goal was to design a simulation that accurately
+        recreates the group motion of a flock of birds by giving each individual boid the same
+        three rules that birds seem to follow.
+      </p>
+    </section>
+
+    <!-- Media Box: Before Rules -->
+    <div class="media-box">
+    <div class="media-box-inner">
+      <img src="Figures/cwr87p2.jpeg" alt="Craig Reynolds' original 1987 boid simulation" />
+    </div>
+    <p class="media-box-caption">Fig. 1: A frame from Craig Reynolds' original 1987 boid simulation, one of the first attempts to model bird flocking behavior in computer graphics.</p>
+    </div>
+
+
+    <!-- Section: The Three Rules -->
+    <section class="section" id="rules">
+      <h2 class="section-title">The Three Rules</h2>
+
+      <div class="rules-grid">
+
+        <div class="rule-card">
+          <div class="rule-tag">Rule 1</div>
+          <h3 class="rule-name">Separation</h3>
+          <p>
+            Each boid maintains a certain distance between itself and its neighbors.
+            If one boid inches too close to another, both will correct themselves and veer
+            away to avoid a collision. This prevents the group as a whole from overlapping
+            or converging into one spot and collapsing into a single point in space.
+          </p>
+          <div class="rule-diagram-inner">
+            <img src="Figures/sep.jpg" alt="Rule 1 diagram" />
+          </div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-tag">Rule 2</div>
+          <h3 class="rule-name">Alignment</h3>
+          <p>
+            Each boid observes the direction its neighbors are moving and adjusts its own
+            direction to match the average of those around it. No singular boid knows where
+            to go on its own; they simply go with the flow of their neighbors. This allows
+            the flock to move fluidly and dynamically through environments. If a boid near
+            the edge detects an obstacle, it steers away, which signals nearby boids to do
+            the same through a ripple effect.
+          </p>
+          <div class="rule-diagram-inner">
+            <img src="Figures/ali.jpg" alt="Rule 1 diagram" />
+          </div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-tag">Rule 3</div>
+          <h3 class="rule-name">Cohesion</h3>
+          <p>
+            Each boid calculates the average point between a number of nearby neighbors
+            and moves toward it. Unlike rule 2, which is about direction, rule 3 is entirely
+            about position. This final rule attempts to keep the larger group together and
+            prevent boids from drifting off into smaller, disconnected groups when an
+            obstacle forces them apart.
+          </p>
+          <div class="rule-diagram-inner">
+            <img src="Figures/coh.jpg" alt="Rule 1 diagram" />
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: Emergent Behavior -->
+    <section class="section" id="emergence">
+      <h2 class="section-title">Emergent Behavior</h2>
+      <p>
+        Each boid is limited to seeing a small, local group directly around itself, and they
+        are unable to see or reference the flock as a whole. Yet, they somehow manage to
+        create lifelike group behaviors that mimic the actions of real world animals. In
+        practice, the flock is smarter and more capable than any individual boid within it.
+      </p>
+      <p>
+        This phenomenon, when simple rules come together to create complex behavior, is called
+        <strong>emergence</strong>. Boids are one of the clearest examples of it.
+      </p>
+
+      <!-- Callout Box -->
+      <div class="callout">
+        <span class="callout-label">Key Concept</span>
+        <p>
+          Emergence: complex group behavior arising from simple individual rules,
+          with no central control.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: Uses Today -->
+    <section class="section" id="uses">
+      <h2 class="section-title">How Are They Used Today?</h2>
+
+      <div class="media-box" id="fig2" style="margin: 1.25rem 0 1.5rem;">
+        <div class="media-box-inner">
+          <img src="Figures/birds_and_boids.jpg" alt="A real flock of birds alongside a matching boid simulation overlay" />
+        </div>
+        <p class="media-box-caption">Fig. 2: A cropped image of a real flock of birds (left) alongside a group of boids laid over the image, representing a similar behavior (right).</p>
+      </div>
+
+      <p>
+        Although Reynolds' original implementation was designed for recreating birds, these
+        types of simulations have been used to estimate the movement patterns of birds, fish,
+        land animals, and even crowds of people. In video games they are used to create large
+        groups of animals and enemies, while in animation, boids create the lively wildlife
+        of films and television. The field of robotics uses them to coordinate groups of
+        physical, autonomous robots and drones. Not only that, but the technology has even
+        been used to predict how crowds move through public spaces in architectural design
+        and urban planning.
+      </p>
+
+      <ul class="uses-list">
+        <li><span class="use-domain">Biology</span> Estimating movement patterns of birds, fish, and land animals</li>
+        <li><span class="use-domain">Video Games</span> Generating large groups of animals and enemies</li>
+        <li><span class="use-domain">Animation</span> Creating the lively wildlife of films and television</li>
+        <li><span class="use-domain">Robotics</span> Coordinating groups of physical, autonomous robots and drones</li>
+        <li><span class="use-domain">Urban Planning</span> Predicting how crowds move through public spaces</li>
+      </ul>
+    </section>
+
+    <!-- Fig. 3: Boid Settings Panel -->
+    <p class="fig3-invite">You've seen the rules. Now explore them.</p>
+
+    <div class="media-box boid-controls-box">
+
+      <p class="ctrl-per-boid-note">Each slider adjusts a property of <strong>every individual boid</strong> — there are no larger group rules, only individual ones. The emergent behavior you see is the result of every boid independently following the same rules.</p>
+
+      <!-- Presets row -->
+      <div class="ctrl-presets">
+        <span class="ctrl-presets-label">Presets</span>
+        <button class="preset-btn" data-preset="birds">Birds</button>
+        <button class="preset-btn" data-preset="fish">Fish</button>
+        <button class="preset-btn" data-preset="insects">Insects</button>
+        <button class="preset-btn" data-preset="crowd">Crowd</button>
+        <button class="preset-btn preset-btn--action" id="ctrl-randomize">Randomize</button>
+        <button class="preset-btn preset-btn--action" id="ctrl-reset">&#x21BA; Reset</button>
+      </div>
+
+      <div class="ctrl-table">
+
+        <div class="ctrl-row">
+          <span class="ctrl-name"><span class="ctrl-idx">01</span> Separation force</span>
+          <input type="range" id="ctrl-sep-force" min="0" max="1" step="0.01" value="0.15">
+          <output class="ctrl-val" id="out-sep-force">0.15</output>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-name"><span class="ctrl-idx">02</span> Alignment</span>
+          <input type="range" id="ctrl-align-force" min="0" max="0.3" step="0.005" value="0.03">
+          <output class="ctrl-val" id="out-align-force">0.030</output>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-name"><span class="ctrl-idx">03</span> Cohesion</span>
+          <input type="range" id="ctrl-coh-force" min="0" max="0.08" step="0.002" value="0.004">
+          <output class="ctrl-val" id="out-coh-force">0.004</output>
+        </div>
+
+        <div class="ctrl-row ctrl-row--has-sub">
+          <span class="ctrl-name"><span class="ctrl-idx">04</span> Separation radius</span>
+          <input type="range" id="ctrl-sep-dist" min="5" max="120" step="1" value="32">
+          <output class="ctrl-val" id="out-sep-dist">32 px</output>
+        </div>
+        <p class="ctrl-sub">How close is too close: the personal space each boid tries to keep from its neighbors</p>
+
+        <div class="ctrl-row ctrl-row--has-sub">
+          <span class="ctrl-name"><span class="ctrl-idx">05</span> Vision radius</span>
+          <input type="range" id="ctrl-vision" min="20" max="200" step="5" value="80">
+          <output class="ctrl-val" id="out-vision">80 px</output>
+        </div>
+        <p class="ctrl-sub">How far each boid can "see": only boids within this distance count as neighbors</p>
+
+        <div class="ctrl-row">
+          <span class="ctrl-name"><span class="ctrl-idx">06</span> Speed</span>
+          <input type="range" id="ctrl-speed" min="0.3" max="15.0" step="0.1" value="1.2">
+          <output class="ctrl-val" id="out-speed">1.2</output>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-name"><span class="ctrl-idx">07</span> Size</span>
+          <input type="range" id="ctrl-size" min="3" max="30" step="1" value="7">
+          <output class="ctrl-val" id="out-size">7 px</output>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-name"><span class="ctrl-idx">08</span> Boid count</span>
+          <input type="range" id="ctrl-count" min="5" max="250" step="1" value="28">
+          <output class="ctrl-val" id="out-count">28</output>
+        </div>
+
+        <div class="ctrl-row ctrl-row--has-sub">
+          <span class="ctrl-name"><span class="ctrl-idx">09</span> Wander</span>
+          <input type="range" id="ctrl-wander" min="0" max="0.40" step="0.005" value="0.04">
+          <output class="ctrl-val" id="out-wander">0.04</output>
+        </div>
+        <p class="ctrl-sub">Individual randomness: how often a boid ignores the group and drifts on its own before being pulled back</p>
+
+      </div>
+
+      <div class="boid-controls-footer">
+        <p class="media-box-caption" style="border:none; padding:0;">Per-boid parameters — move your cursor over the background to interact.</p>
+      </div>
+
+    </div>
+
+    <!-- Section: Sources -->
+    <section class="section" id="sources">
+      <h2 class="section-title">Sources</h2>
+      <ul class="sources-list">
+        <li>
+          <a href="https://people.engr.tamu.edu/sueda/courses/CSCE450/2023F/projects/Frank_Martinez/index.html" target="_blank">
+            Boid Project, Texas A&amp;M
+          </a>
+          <span class="source-note">Obstacle examples and simulation coding</span>
+        </li>
+        <li>
+          <a href="https://commons.wikimedia.org/wiki/File:Birds_at_sunset,_Vietnam.jpg" target="_blank">
+            Birds at Sunset, Vietnam — Wikimedia Commons
+          </a>
+          <span class="source-note">Fig. 2: flock of birds photograph</span>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=bqtqltqcQhw" target="_blank">
+            Coding Adventure: Boids by Sebastian Lague
+          </a>
+          <span class="source-note">Ideas for visualization</span>
+        </li>
+        <li>
+          <a href="https://dl.acm.org/doi/10.1145/37402.37406" target="_blank">
+            Flocks, Herds and Schools by Craig Reynolds (1987)
+          </a>
+          <span class="source-note">The original boid paper</span>
+        </li>
+        <li>
+          <a href="https://cs.stanford.edu/people/eroberts/courses/soco/projects/2008-09/modeling-natural-systems/boids.html" target="_blank">
+            Stanford: Modeling Natural Systems
+          </a>
+          <span class="source-note">Real-world uses and visualization ideas</span>
+        </li>
+        <li>
+          <a href="https://en.wikipedia.org/wiki/Boids" target="_blank">
+            Wikipedia: Boids
+          </a>
+          <span class="source-note">Overview and real-world applications</span>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>Boid Simulation — Interactive Explainer</p>
+  </footer>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,682 @@
+/* ———Boid Canvas——— */
+#boid-canvas {
+  position: fixed;       /* stays in place while you scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;  /* clicks pass through to content below */
+  z-index: 0;            /* behind everything */
+}
+
+/* ———Reset & Base——— */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ———Variables——— */
+:root {
+  --bg:           #f2f3f4;
+  --surface:      #ffffff;
+  --border:       #d4d6d9;
+  --text:         #1a1c1e;
+  --text-muted:   #6b7280;
+  --accent:       #2a5ca8;
+  --accent-light: #e8eef8;
+  --placeholder:  #d4d7db;
+  --font-mono:    "Courier New", Courier, monospace;
+  --font-body:    Georgia, "Times New Roman", serif;
+}
+
+/* ———Dark Mode (toggled via data-theme="dark" on <html>)——— */
+[data-theme="dark"] {
+  --bg:           #05080f;   /* near-black navy */
+  --surface:      #090f1e;   /* very dark blue */
+  --border:       #1e3a5f;
+  --text:         #c8dff0;
+  --text-muted:   #5a8aaa;
+  --accent:       #4db8c8;
+  --accent-light: #0d2d40;
+  --placeholder:  #0a1525;
+}
+
+/* ———Body——— */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  padding: 0 1rem;
+}
+
+/* ———Lift content above canvas——— */
+.site-header, .content, main, .site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ———Header——— */
+.site-header {
+  max-width: 720px;
+  margin: 4rem auto 1rem;
+  padding-bottom: 2rem;
+}
+
+.header-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.site-title {
+  padding-top: 2rem;
+  font-size: 2.6rem;
+  font-weight: normal;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.site-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.header-rule {
+  height: 1px;
+  background-color: var(--border);
+}
+
+/* ———Main Content——— */
+.content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+/* ———Sections——— */
+.section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:first-child {
+  padding-top: 1rem;  /* [FIX] reduce from 2.5rem */
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: normal;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.section p {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+/* ———Rules Grid——— */
+.rules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .rules-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.rule-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.rule-name {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+}
+
+.rule-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+  flex: 1; /* pushes diagram box to bottom */
+}
+
+/* ———Rule Diagram Placeholder (inside each rule card)——— */
+.rule-diagram-inner {
+  width: 100%;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rule-diagram-inner img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rule-diagram-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  user-select: none;
+  opacity: 0;
+}
+
+/* ———Callout Box——— */
+.callout {
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.callout-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.callout p {
+  font-size: 0.95rem;
+  margin-bottom: 0;
+  color: var(--text);
+}
+
+/* ———Uses List——— */
+.uses-list {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.uses-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.uses-list li:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.use-domain {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+/* ———Sources List——— */
+.sources-list {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.sources-list li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.sources-list a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.sources-list a:hover {
+  text-decoration: underline;
+}
+
+.source-note {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ———Media Box Template——— */
+.media-box {
+  border: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.media-box-inner {
+  /* Placeholder area — replace with an image, canvas, iframe, etc. */
+  width: 100%;
+  display: block;
+}
+
+.media-box-inner img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.media-box-placeholder {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  user-select: none;             /* prevent accidental text selection */
+}
+
+.media-box-caption {
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  background: var(--surface);
+  margin-bottom: 0; /* [FIX] cancel .section p margin-bottom leaking into the media-box border */
+}
+
+/* ———Fig. 3 invite headline——— */
+.fig3-invite {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: var(--text);
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* ———Boid Controls Panel (Fig. 3)——— */
+.boid-controls-box {
+  margin-top: 0;
+  background: var(--surface);
+}
+
+/* Per-boid callout inside the box */
+.ctrl-per-boid-note {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  padding: 0.7rem 1.1rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.ctrl-per-boid-note em {
+  font-style: normal;
+  color: var(--text);
+}
+
+/* Preset buttons row */
+.ctrl-presets {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.ctrl-presets-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 0.2rem;
+}
+
+.preset-btn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.28rem 0.75rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.preset-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.preset-btn.active {
+  color: var(--surface);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* Randomize + Reset — separated visually with left margin */
+.preset-btn--action {
+  margin-left: 0.4rem;
+  color: var(--text-muted);
+  background: none;
+}
+
+.preset-btn--action:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* Single-column slider table */
+.ctrl-table {
+  padding: 0.8rem 1.1rem 0.6rem;
+}
+
+.ctrl-row {
+  display: grid;
+  grid-template-columns: 10rem 1fr 3.2rem;
+  align-items: center;
+  column-gap: 0.9rem;
+  padding: 0.65rem 0 0.6rem;
+  border-bottom: none;
+}
+
+.ctrl-row--has-sub {
+  border-bottom: none;
+  padding-bottom: 0.1rem;
+}
+
+.ctrl-row:last-child {
+  border-bottom: none;
+}
+
+.ctrl-sub {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+  padding-bottom: 0.55rem;
+  border-bottom: none;
+  margin-top: -0.05rem;
+}
+
+.ctrl-name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ctrl-idx {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+}
+
+/* Slim slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.35);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+}
+
+.ctrl-val {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+  text-align: right;
+  white-space: nowrap;
+}
+
+#sources {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Footer: caption only */
+.boid-controls-footer {
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 1.1rem;
+}
+
+.boid-controls-footer .media-box-caption {
+  flex: 1;
+}
+
+/* ———Footer——— */
+.site-footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ———Dark Mode Toggle Button——— */
+#theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  bottom: auto;
+  z-index: 100;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+#theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ———Focus Mode Toggle Button——— */
+#focus-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 4.2rem;   /* sits just left of the theme toggle */
+  z-index: 100;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+#focus-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ———Follow Mode Toggle Button——— */
+#follow-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 6.9rem; /* sits left of focus button */
+  z-index: 100;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+#follow-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* active state */
+body.follow-mode #follow-toggle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+
+/* Active state: button turns accent when focus mode is on */
+body.focus-mode #focus-toggle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+
+/* ———Focus Mode: hide article, pin controls——— */
+
+/* [CRITICAL] !important is required here — the scroll-fade JS sets inline style.opacity="1"
+   on each section after it scrolls into view. Without !important, the inline style wins
+   and sections stay visible even when focus mode is active. */
+body.focus-mode .content > *:not(.boid-controls-box),
+body.focus-mode .site-header,
+body.focus-mode .site-footer {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease !important;
+}
+
+/* Also hide the description note and footer inside the controls box */
+body.focus-mode .ctrl-per-boid-note,
+body.focus-mode .boid-controls-footer {
+  display: none;
+}
+
+/* Unpin content wrapper so the controls box can go fixed */
+body.focus-mode .content {
+  position: static;
+}
+
+/* Pin the controls panel to the bottom-left corner */
+body.focus-mode .boid-controls-box {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  width: min(420px, calc(100vw - 3rem));
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  z-index: 50;
+  margin: 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  transition: box-shadow 0.2s;
+}
+
+#boid-simulation {
+  border-bottom: none;
+}
+
+#rules {
+  border-top: 1px solid var(--border);
+}
+
+.uses-list li:last-child,
+.sources-list li:last-child {
+  border-bottom: none;
+}
+
+#boid-simulation {
+  border-bottom: none;
+  padding-bottom: 0.5rem;  /* [FIX] add this */
+}
+
+#uses {
+  padding-top: 0.5rem;  /* [FIX] add this */
+}
+
+#fig2 .media-box-caption {
+    margin-bottom: 0;
+}
