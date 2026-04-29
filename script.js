@@ -448,7 +448,7 @@ const PRESETS = {
 
   // Gnat/midge swarm — anchored center, chaotic individuals
   insects: {
-    sepForce: 0.20, alignForce: 0.005, cohForce: 0.0045,
+    sepForce: 0.20, alignForce: 0.005, cohForce: 0.006,
     sepDist: 18, visionDist: 120, boidSize: 3, speed: 5.5, count: 100,
     turnDamp: 0.0, wander: 0.3
   },
