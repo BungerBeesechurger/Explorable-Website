@@ -14,7 +14,7 @@ let followMode = false;
 let followedBoid = null;
 
 // ———Config———
-const MAX_BOIDS    = 28;
+const MAX_BOIDS    = 12;
 const BOID_SIZE    = 7;
 const SPEED        = 1.2;
 const MARGIN       = 80;
